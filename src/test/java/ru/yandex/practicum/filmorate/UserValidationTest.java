@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserLoginConstraint;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -117,9 +118,46 @@ public class UserValidationTest {
     }
 
     @Test
-    public void annotationNotBlankTestForUserLogin() {
+    public void annotationUserLoginConstraintTestIfUserLoginIsNull() {
         testUser.setEmail("test@test.ru");
+        testUser.setBirthday(LocalDate.of(1989, 12, 29));
+        testUser.setLogin(null);
+        Set<ConstraintViolation<User>> violations = validator.validate(testUser);
+        Assertions.assertEquals(1, violations.size());
+    }
+
+    @Test
+    public void annotationUserLoginConstraintTestIfUserLoginIsBlank() {
+        testUser.setEmail("test@test.ru");
+        testUser.setBirthday(LocalDate.of(1989, 12, 29));
         testUser.setLogin(" ");
+        Set<ConstraintViolation<User>> violations = validator.validate(testUser);
+        Assertions.assertEquals(1, violations.size());
+    }
+
+    @Test
+    public void annotationUserLoginConstraintTestIfUserLoginContainsSpaces() {
+        testUser.setEmail("test@test.ru");
+        testUser.setBirthday(LocalDate.of(1989, 12, 29));
+        testUser.setLogin("test ");
+        Set<ConstraintViolation<User>> violations = validator.validate(testUser);
+        Assertions.assertEquals(1, violations.size());
+    }
+
+    @Test
+    public void annotationUserLoginConstraintTestIfUserLoginStandardCase() {
+        testUser.setEmail("test@test.ru");
+        testUser.setBirthday(LocalDate.of(1989, 12, 29));
+        testUser.setLogin("test");
+        Set<ConstraintViolation<User>> violations = validator.validate(testUser);
+        Assertions.assertEquals(0, violations.size());
+    }
+
+    @Test
+    public void annotationPastTestIfUserBirthdayInFuture() {
+        testUser.setLogin("test");
+        testUser.setEmail("test@test.ru");
+        testUser.setBirthday(LocalDate.of(2030, 12, 12));
         Set<ConstraintViolation<User>> violations = validator.validate(testUser);
         Assertions.assertEquals(1, violations.size());
     }

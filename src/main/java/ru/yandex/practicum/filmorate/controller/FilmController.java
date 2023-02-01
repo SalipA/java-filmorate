@@ -19,21 +19,17 @@ public class FilmController extends Controller<Film> {
 
     @Override
     public Film create(@Valid @RequestBody Film film) throws ValidationException {
-        try {
             validateInput(film);
             counter++;
             film.setId(counter);
             allValues.put(film.getId(), film);
             return film;
-        } catch (ValidationException exp) {
-            throw new ValidationException(exp.getMessage());
-        }
     }
 
     @Override
     public Film update(@Valid @RequestBody Film film) throws ValidationException {
-        try {
-            validateInput(film);
+
+        validateInput(film);
             if (allValues.containsKey(film.getId())) {
                 allValues.remove(film.getId());
                 allValues.put(film.getId(), film);
@@ -41,9 +37,6 @@ public class FilmController extends Controller<Film> {
             } else {
                 throw new ValidationException("Фильм с данным id не найден");
             }
-        } catch (ValidationException exp) {
-            throw new ValidationException(exp.getMessage());
-        }
     }
 
     private void validateInput(Film film) throws ValidationException {

@@ -88,6 +88,63 @@ public class FilmValidationTest {
     @Test
     public void annotationNotBlankTestForFilmName() {
         testFilm.setName(" ");
+        testFilm.setDuration(10);
+        testFilm.setReleaseDate(LocalDate.of(2000, 12, 12));
+        Set<ConstraintViolation<Film>> violations = validator.validate(testFilm);
+        Assertions.assertEquals(1, violations.size());
+    }
+
+    @Test
+    public void annotationSizeMax200TestForFilmDescriptionLengthIsMoreThen200Chars() {
+        String testDescription = RandomString.make(205);
+        testFilm.setName("testName");
+        testFilm.setDuration(10);
+        testFilm.setReleaseDate(LocalDate.of(2000, 12, 12));
+        testFilm.setDescription(testDescription);
+        Set<ConstraintViolation<Film>> violations = validator.validate(testFilm);
+        Assertions.assertEquals(1, violations.size());
+    }
+
+    @Test
+    public void annotationFilmReleaseDateConstraintTestForFilmReleaseDateNull() {
+        testFilm.setName("testName");
+        testFilm.setDuration(10);
+        Set<ConstraintViolation<Film>> violations = validator.validate(testFilm);
+        Assertions.assertEquals(1, violations.size());
+    }
+
+    @Test
+    public void annotationFilmReleaseDateConstraintTestForFilmReleaseDateIsBeforeMinDate() {
+        testFilm.setName("testName");
+        testFilm.setDuration(10);
+        testFilm.setReleaseDate(LocalDate.of(1600, 12, 12));
+        Set<ConstraintViolation<Film>> violations = validator.validate(testFilm);
+        Assertions.assertEquals(1, violations.size());
+    }
+
+    @Test
+    public void annotationFilmReleaseDateConstraintTestForFilmReleaseDateIs28_12_1895() {
+        testFilm.setName("testName");
+        testFilm.setDuration(10);
+        testFilm.setReleaseDate(LocalDate.of(1895, 12, 28));
+        Set<ConstraintViolation<Film>> violations = validator.validate(testFilm);
+        Assertions.assertEquals(0, violations.size());
+    }
+
+    @Test
+    public void annotationFilmReleaseDateConstraintTestForFilmReleaseDateIsAfterMinDate() {
+        testFilm.setName("testName");
+        testFilm.setDuration(10);
+        testFilm.setReleaseDate(LocalDate.of(2000, 12, 28));
+        Set<ConstraintViolation<Film>> violations = validator.validate(testFilm);
+        Assertions.assertEquals(0, violations.size());
+    }
+
+    @Test
+    public void annotationPositiveFilmDurationTestForFilmIfDurationIsNegative() {
+        testFilm.setName("testName");
+        testFilm.setDuration(-10);
+        testFilm.setReleaseDate(LocalDate.of(2000, 12, 12));
         Set<ConstraintViolation<Film>> violations = validator.validate(testFilm);
         Assertions.assertEquals(1, violations.size());
     }

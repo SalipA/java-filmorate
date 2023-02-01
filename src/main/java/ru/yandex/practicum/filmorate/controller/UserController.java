@@ -14,19 +14,16 @@ import java.time.LocalDate;
 public class UserController extends Controller<User> {
     @Override
     public User create(@Valid @RequestBody User user) throws ValidationException {
-        try {
             validateInput(user);
             counter++;
             user.setId(counter);
             allValues.put(user.getId(), user);
             return user;
-        } catch (ValidationException exp) {
-            throw new ValidationException(exp.getMessage());
-        }
     }
 
     @Override
     public User update(@Valid @RequestBody User user) throws ValidationException {
+        validateInput(user);
         if (allValues.containsKey(user.getId())) {
             allValues.remove(user.getId());
             allValues.put(user.getId(), user);
