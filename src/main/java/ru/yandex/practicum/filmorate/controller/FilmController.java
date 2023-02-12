@@ -1,55 +1,64 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.film.FilmService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
 @Slf4j
 public class FilmController extends Controller<Film> {
-    private static final int MAX_LENGTH_DESCRIPTION = 200;
-    private static final LocalDate MIN_RELEASE_DAT = LocalDate.of(1895, 12, 28);
+    private final static String DEFAULT_VALUE_POPULAR_LIST_SIZE = "10";
+    private final FilmService filmService;
 
-    @Override
-    public Film create(@Valid @RequestBody Film film) throws ValidationException {
-            validateInput(film);
-            counter++;
-            film.setId(counter);
-            allValues.put(film.getId(), film);
-            return film;
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
     }
 
     @Override
-    public Film update(@Valid @RequestBody Film film) throws ValidationException {
-
-        validateInput(film);
-            if (allValues.containsKey(film.getId())) {
-                allValues.remove(film.getId());
-                allValues.put(film.getId(), film);
-                return film;
-            } else {
-                throw new ValidationException("Фильм с данным id не найден");
-            }
+    public Film create(@Valid @RequestBody Film film) throws ValidationException, AlreadyExistException {
+        return filmService.createFilm(film);
     }
 
-    private void validateInput(Film film) throws ValidationException {
-        if (allValues.containsValue(film)) {
-            throw new ValidationException("Данный фильм уже был добавлен");
-        } else if (film.getName() == null || film.getName().isBlank()) {
-            throw new ValidationException("Название не может быть пустым");
-        } else if (film.getDescription() != null && film.getDescription().length() > MAX_LENGTH_DESCRIPTION) {
-            throw new ValidationException("Длина описания больше максимальной возможной");
-        } else if (film.getReleaseDate() != null && film.getReleaseDate().isBefore(MIN_RELEASE_DAT)) {
-            throw new ValidationException("Дата релиза ранее самой ранней возможной");
-        } else if (film.getDuration() <= 0) {
-            throw new ValidationException("Продолжительность фильма должна быть положительной");
-        }
+    @Override
+    public Film update(@Valid @RequestBody Film film) throws ValidationException, NotFoundException {
+        return filmService.updateFilm(film);
+    }
+
+    @Override
+    public List<Film> getAll() {
+        return filmService.getAllFilms();
+    }
+
+    @Override
+    @GetMapping("/{id}")
+    public Film get(@PathVariable Long id) throws NotFoundException {
+        return filmService.getFilmById(id);
+    }
+
+    @Override
+    @PutMapping("/{id}/like/{userId}")
+    public Film put(@PathVariable Long id, @PathVariable Long userId) throws NotFoundException {
+        return filmService.addLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopular(@RequestParam(defaultValue = DEFAULT_VALUE_POPULAR_LIST_SIZE, required = false) Integer count) {
+        return filmService.getPopular(count);
+    }
+
+    @Override
+    @DeleteMapping("/{id}/like/{userId}")
+    public Film delete(@PathVariable Long id, @PathVariable Long userId) throws NotFoundException {
+        return filmService.removeLike(id, userId);
     }
 }
