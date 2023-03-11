@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service.film;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -8,6 +9,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
@@ -22,36 +24,36 @@ public class FilmService {
     Comparator<Film> compPopular = Comparator.comparingInt(o -> POPULAR_FROM_MAX_TO_MIN_SORT_RATE * o.getLikes().size());
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(@Qualifier("DbStorage") FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }
 
-    public Film createFilm(Film film) throws ValidationException, AlreadyExistException {
+    public Film createFilm(Film film) throws ValidationException, AlreadyExistException, NotFoundException {
         validateInput(film);
         return filmStorage.addFilmToStorage(film);
     }
 
-    public Film updateFilm(Film film) throws ValidationException, NotFoundException {
+    public Film updateFilm(Film film) throws ValidationException, NotFoundException, AlreadyExistException {
         validateInput(film);
         return filmStorage.updateFilmInStorage(film);
     }
 
-    public List<Film> getAllFilms() {
+    public List<Film> getAllFilms() throws NotFoundException, SQLException {
         return filmStorage.getAll();
     }
 
-    public Film getFilmById(Long filmId) throws NotFoundException {
+    public Film getFilmById(Long filmId) throws NotFoundException, SQLException {
         return filmStorage.getFilmFromStorage(filmId);
     }
 
-    public Film addLike(Long filmId, Long userId) throws NotFoundException {
+    public Film addLike(Long filmId, Long userId) throws NotFoundException, SQLException, AlreadyExistException {
         Film foundFilm = filmStorage.getFilmFromStorage(filmId);
         foundFilm.setLikes(userId);
         filmStorage.updateFilmInStorage(foundFilm);
         return foundFilm;
     }
 
-    public Film removeLike(Long filmId, Long userId) throws NotFoundException {
+    public Film removeLike(Long filmId, Long userId) throws NotFoundException, SQLException, AlreadyExistException {
         Film foundFilm = filmStorage.getFilmFromStorage(filmId);
         if (foundFilm.getLikes().contains(userId)) {
             foundFilm.getLikes().remove(userId);
@@ -62,7 +64,7 @@ public class FilmService {
         }
     }
 
-    public List<Film> getPopular(Integer count) {
+    public List<Film> getPopular(Integer count) throws NotFoundException, SQLException {
 
         List<Film> sortedList = filmStorage.getAll().stream()
             .sorted(compPopular)

@@ -114,8 +114,6 @@ public class UserServiceTest {
         US.create(testUser2);
         US.addFriend(1L, 2L);
         Assertions.assertEquals(1, US.getFriends(1L).size());
-        Assertions.assertEquals(US.getUserById(2L), US.getFriends(1L).get(0));
-        Assertions.assertEquals(US.getUserById(1L), US.getFriends(2L).get(0));
     }
 
     @Test
@@ -127,7 +125,7 @@ public class UserServiceTest {
         testUser2.setBirthday(LocalDate.of(2000, 2, 24));
         US.create(testUser2);
         US.addFriend(1L, 2L);
-        US.removeFriend(2L, 1L);
+        US.removeFriend(1L, 2L);
         Assertions.assertEquals(0, US.getFriends(1L).size());
         Assertions.assertEquals(0, US.getFriends(2L).size());
     }
@@ -179,7 +177,7 @@ public class UserServiceTest {
         US.create(testUser3);
         US.addFriend(1L, 3L);
         US.addFriend(2L, 3L);
-        US.removeFriend(3L, 1L);
+        US.removeFriend(1L, 3L);
         Assertions.assertEquals(0, US.getCommonFriends(1L, 2L).size());
     }
 }

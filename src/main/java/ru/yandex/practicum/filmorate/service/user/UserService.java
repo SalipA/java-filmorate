@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
@@ -8,18 +9,16 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserService {
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("DbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
@@ -28,63 +27,55 @@ public class UserService {
         return userStorage.addUserToStorage(user);
     }
 
-    public User update(User user) throws ValidationException, NotFoundException {
+    public User update(User user) throws ValidationException, NotFoundException, AlreadyExistException {
         validateInput(user);
         return userStorage.updateUserInStorage(user);
     }
 
-    public User getUserById(Long userId) throws NotFoundException {
+    public User getUserById(Long userId) throws NotFoundException, SQLException {
         return userStorage.getUserFromStorage(userId);
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() throws NotFoundException, SQLException {
         return userStorage.getAll();
     }
 
-    public User addFriend(Long UserId, Long FriendId) throws NotFoundException {
+    public User addFriend(Long UserId, Long FriendId) throws NotFoundException, SQLException, AlreadyExistException {
         User user = userStorage.getUserFromStorage(UserId);
         User usersFriend = userStorage.getUserFromStorage(FriendId);
-        user.setFriends(usersFriend.getId());
-        usersFriend.setFriends(user.getId());
+        user.setFriends(usersFriend);
         userStorage.updateUserInStorage(user);
-        userStorage.updateUserInStorage(usersFriend);
         return user;
     }
 
-    public User removeFriend(Long userId, Long friendId) throws NotFoundException {
+    public User removeFriend(Long userId, Long friendId) throws NotFoundException, SQLException, AlreadyExistException {
         User user = userStorage.getUserFromStorage(userId);
         User usersFriend = userStorage.getUserFromStorage(friendId);
-        if (user.getFriends().contains(usersFriend.getId()) && usersFriend.getFriends().contains(user.getId())) {
-            user.getFriends().remove(usersFriend.getId());
-            usersFriend.getFriends().remove(user.getId());
+        if (user.getFriends().contains(usersFriend)) {
+            user.getFriends().remove(usersFriend);
             userStorage.updateUserInStorage(user);
-            userStorage.updateUserInStorage(usersFriend);
             return user;
         } else {
             throw new NotFoundException("Удалить из друзей пользователя с id = " + usersFriend.getId() + " невозможно");
         }
     }
 
-    public List<User> getFriends(Long userId) throws NotFoundException {
+    public List<User> getFriends(Long userId) throws NotFoundException, SQLException {
         User user = userStorage.getUserFromStorage(userId);
-        Set<Long> userFriendsId = user.getFriends();
-        List<User> friendsList = new ArrayList<>();
-        for (Long id : userFriendsId) {
-            friendsList.add(userStorage.getUserFromStorage(id));
-        }
-        return friendsList;
+        Set<User> userFriends = user.getFriends();
+        return new LinkedList<>(userFriends);
     }
 
-    public List<User> getCommonFriends(Long userId, Long friendId) throws NotFoundException {
+    public List<User> getCommonFriends(Long userId, Long friendId) throws NotFoundException, SQLException {
         User user = userStorage.getUserFromStorage(userId);
         User usersFriend = userStorage.getUserFromStorage(friendId);
-        Set<Long> userFriendsId = user.getFriends();
-        Set<Long> usersFriendFriendsId = usersFriend.getFriends();
-        Set<Long> common = new HashSet<>(userFriendsId);
+        Set<User> userFriendsId = user.getFriends();
+        Set<User> usersFriendFriendsId = usersFriend.getFriends();
+        Set<User> common = new HashSet<>(userFriendsId);
         common.retainAll(usersFriendFriendsId);
         List<User> commonFriendsList = new ArrayList<>();
-        for (Long id : common) {
-            commonFriendsList.add(userStorage.getUserFromStorage(id));
+        for (User commonUser : common) {
+            commonFriendsList.add(userStorage.getUserFromStorage(commonUser.getId()));
         }
         return commonFriendsList;
     }
