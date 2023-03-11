@@ -6,10 +6,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import ru.yandex.practicum.filmorate.controller.UserController;
+import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserLoginConstraint;
+import ru.yandex.practicum.filmorate.service.user.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -32,7 +35,9 @@ public class UserValidationTest {
 
     @BeforeAll
     public static void createControllers() {
-        UC = new UserController();
+        UserStorage UStor = new InMemoryUserStorage();
+        UserService UServ = new UserService(UStor);
+        UC = new UserController(UServ);
     }
 
     @BeforeEach
@@ -98,7 +103,7 @@ public class UserValidationTest {
     }
 
     @Test
-    public void shouldCreateUserIfNameIsEmpty() throws ValidationException {
+    public void shouldCreateUserIfNameIsEmpty() throws ValidationException, AlreadyExistException {
         testUser.setLogin("test");
         testUser.setEmail("test@test.ru");
         testUser.setName("");
