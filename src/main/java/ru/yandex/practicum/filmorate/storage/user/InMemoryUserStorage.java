@@ -16,7 +16,7 @@ public class InMemoryUserStorage implements UserStorage {
     private Long idCounter = 0L;
 
     @Override
-    public User addUserToStorage(User user) throws AlreadyExistException {
+    public User addUserToStorage(User user) {
         if (idUsers.containsValue(user)) {
             throw new AlreadyExistException(user);
         } else {
@@ -28,7 +28,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User updateUserInStorage(User user) throws NotFoundException {
+    public User updateUserInStorage(User user) {
         if (idUsers.containsKey(user.getId())) {
             idUsers.remove(user.getId());
             idUsers.put(user.getId(), user);
@@ -39,7 +39,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User getUserFromStorage(Long id) throws NotFoundException {
+    public User getUserFromStorage(Long id) {
         if (idUsers.containsKey(id)) {
             return idUsers.get(id);
         } else {

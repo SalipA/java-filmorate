@@ -13,7 +13,7 @@ import java.util.Set;
 @Data
 @NonNull
 public class User {
-    Set<Long> friends = new HashSet<>();
+    Set<User> friends = new HashSet<>();
 
     @Email
     private String email;
@@ -27,7 +27,22 @@ public class User {
     private LocalDate birthday;
     private Long id;
 
-    public void setFriends(Long userId) {
-        friends.add(userId);
+    public User(Long id, String email, String login, String name, LocalDate birthday) {
+        this.id = id;
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+    }
+
+    public User() {
+    }
+
+    public void setFriends(User user) {
+        friends.add(user);
+    }
+
+    public void setFriendsSet(Set<User> friendsSet) {
+        this.friends = friendsSet;
     }
 }

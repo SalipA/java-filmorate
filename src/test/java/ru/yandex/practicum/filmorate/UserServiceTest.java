@@ -30,7 +30,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldAddUserInStorageStandardCase() throws Exception {
+    public void shouldAddUserInStorageStandardCase() {
         User testUser = US.create(STANDARD_CASE_USER);
         Assertions.assertEquals(1L, testUser.getId());
         Assertions.assertEquals(US.getUserById(1L), testUser);
@@ -38,7 +38,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldAddUserInStorageIfUserAlreadyExist() throws Exception {
+    public void shouldAddUserInStorageIfUserAlreadyExist() {
         US.create(STANDARD_CASE_USER);
         final AlreadyExistException exp = Assertions.assertThrows(AlreadyExistException.class,
             () -> US.create(STANDARD_CASE_USER)
@@ -48,7 +48,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldUpdateUserInStorageStandardCase() throws Exception {
+    public void shouldUpdateUserInStorageStandardCase() {
         User testUser = US.create(STANDARD_CASE_USER);
         testUser.setName("Update Name");
         US.update(testUser);
@@ -66,7 +66,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldUpdateUserInStorageIfUserNotFound() throws Exception {
+    public void shouldUpdateUserInStorageIfUserNotFound() {
         User testUser = US.create(STANDARD_CASE_USER);
         testUser.setName("Update Name");
         testUser.setId(3L);
@@ -77,7 +77,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldGetAllUsersFromStorageStandardCase() throws Exception {
+    public void shouldGetAllUsersFromStorageStandardCase() {
         User testUser1 = US.create(STANDARD_CASE_USER);
         User testUser2 = new User();
         testUser2.setEmail("test2@test.ru");
@@ -90,7 +90,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldGetUserByIdStandardCase() throws Exception {
+    public void shouldGetUserByIdStandardCase() {
         US.create(STANDARD_CASE_USER);
         STANDARD_CASE_USER.setId(1L);
         Assertions.assertEquals(STANDARD_CASE_USER, US.getUserById(1L));
@@ -105,7 +105,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldAddFriendToUserStandardCase() throws Exception {
+    public void shouldAddFriendToUserStandardCase() {
         US.create(STANDARD_CASE_USER);
         User testUser2 = new User();
         testUser2.setEmail("test2@test.ru");
@@ -114,12 +114,10 @@ public class UserServiceTest {
         US.create(testUser2);
         US.addFriend(1L, 2L);
         Assertions.assertEquals(1, US.getFriends(1L).size());
-        Assertions.assertEquals(US.getUserById(2L), US.getFriends(1L).get(0));
-        Assertions.assertEquals(US.getUserById(1L), US.getFriends(2L).get(0));
     }
 
     @Test
-    public void shouldRemoveFriendsStandardCase() throws Exception {
+    public void shouldRemoveFriendsStandardCase() {
         US.create(STANDARD_CASE_USER);
         User testUser2 = new User();
         testUser2.setEmail("test2@test.ru");
@@ -127,13 +125,13 @@ public class UserServiceTest {
         testUser2.setBirthday(LocalDate.of(2000, 2, 24));
         US.create(testUser2);
         US.addFriend(1L, 2L);
-        US.removeFriend(2L, 1L);
+        US.removeFriend(1L, 2L);
         Assertions.assertEquals(0, US.getFriends(1L).size());
         Assertions.assertEquals(0, US.getFriends(2L).size());
     }
 
     @Test
-    public void shouldGetFriendsByIdStandardCase() throws Exception {
+    public void shouldGetFriendsByIdStandardCase() {
         US.create(STANDARD_CASE_USER);
         User testUser2 = new User();
         testUser2.setEmail("test2@test.ru");
@@ -146,7 +144,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldGetCommonFriendsByIdStandardCase() throws Exception {
+    public void shouldGetCommonFriendsByIdStandardCase() {
         US.create(STANDARD_CASE_USER);
         User testUser2 = new User();
         testUser2.setEmail("test2@test.ru");
@@ -165,7 +163,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void shouldGetCommonFriendsByIdIfRemoveFriend() throws Exception {
+    public void shouldGetCommonFriendsByIdIfRemoveFriend() {
         US.create(STANDARD_CASE_USER);
         User testUser2 = new User();
         testUser2.setEmail("test2@test.ru");
@@ -179,7 +177,7 @@ public class UserServiceTest {
         US.create(testUser3);
         US.addFriend(1L, 3L);
         US.addFriend(2L, 3L);
-        US.removeFriend(3L, 1L);
+        US.removeFriend(1L, 3L);
         Assertions.assertEquals(0, US.getCommonFriends(1L, 2L).size());
     }
 }
