@@ -13,7 +13,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     private Long idCounter = 0L;
 
     @Override
-    public Film addFilmToStorage(Film film) throws AlreadyExistException {
+    public Film addFilmToStorage(Film film) {
         if (idFilms.containsValue(film)) {
             throw new AlreadyExistException(film);
         } else {
@@ -25,7 +25,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film updateFilmInStorage(Film film) throws NotFoundException {
+    public Film updateFilmInStorage(Film film) {
         if (idFilms.containsKey(film.getId())) {
             idFilms.remove(film.getId());
             idFilms.put(film.getId(), film);
@@ -36,7 +36,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film getFilmFromStorage(Long filmId) throws NotFoundException {
+    public Film getFilmFromStorage(Long filmId) {
         if (idFilms.containsKey(filmId)) {
             return idFilms.get(filmId);
         } else {

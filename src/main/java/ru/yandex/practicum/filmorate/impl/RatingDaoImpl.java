@@ -7,8 +7,7 @@ import ru.yandex.practicum.filmorate.dao.RatingDao;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Rating;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -20,9 +19,9 @@ public class RatingDaoImpl implements RatingDao {
     }
 
     @Override
-    public Rating findRatingById(Long id) throws NotFoundException {
-        String sqlQuery = "SELECT * FROM RATINGS WHERE RATING_ID = ?";
-        SqlRowSet ratingRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
+    public Rating findRatingById(Long id) {
+        String sqlFindRatingById = "SELECT * FROM RATINGS WHERE RATING_ID = ?";
+        SqlRowSet ratingRows = jdbcTemplate.queryForRowSet(sqlFindRatingById, id);
         if (ratingRows.next()) {
             return new Rating(ratingRows.getLong("RATING_ID"),
                 ratingRows.getString("NAME"),
@@ -33,12 +32,17 @@ public class RatingDaoImpl implements RatingDao {
     }
 
     @Override
-    public List<Rating> getAll() throws SQLException {
-        String sqlQuery = "SELECT * FROM RATINGS";
-        return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeRating(rs));
+    public List<Rating> getAll() {
+        List<Rating> allRatings = new ArrayList<>();
+        String sqlGetAllRatings = "SELECT * FROM RATINGS";
+        SqlRowSet ratingRowSet = jdbcTemplate.queryForRowSet(sqlGetAllRatings);
+        while (ratingRowSet.next()) {
+            allRatings.add(makeRating(ratingRowSet));
+        }
+        return allRatings;
     }
 
-    private Rating makeRating(ResultSet rs) throws SQLException {
+    private Rating makeRating(SqlRowSet rs) {
         Long id = rs.getLong("RATING_ID");
         String name = rs.getString("NAME");
         String description = rs.getString("DESCRIPTION");

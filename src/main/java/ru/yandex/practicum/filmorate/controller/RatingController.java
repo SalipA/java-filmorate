@@ -5,10 +5,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.dao.RatingDao;
-import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Rating;
 
-import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -21,12 +19,12 @@ public class RatingController {
     }
 
     @GetMapping("/{id}")
-    public Rating get(@PathVariable Long id) throws NotFoundException {
+    public Rating get(@PathVariable Long id) {
         return ratingDao.findRatingById(id);
     }
 
     @GetMapping
-    public List<Rating> getAlL() throws SQLException {
+    public List<Rating> getAlL() {
         return ratingDao.getAll();
     }
 }

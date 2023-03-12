@@ -7,8 +7,7 @@ import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -20,9 +19,9 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
-    public Genre findGenreById(Long id) throws NotFoundException {
-        String sqlQuery = "SELECT * FROM GENRES WHERE GENRE_ID = ?";
-        SqlRowSet genreRows = jdbcTemplate.queryForRowSet(sqlQuery, id);
+    public Genre findGenreById(Long id) {
+        String sqlFindGenreById = "SELECT * FROM GENRES WHERE GENRE_ID = ?";
+        SqlRowSet genreRows = jdbcTemplate.queryForRowSet(sqlFindGenreById, id);
         if (genreRows.next()) {
             return new Genre(genreRows.getLong("GENRE_ID"),
                 genreRows.getString("NAME"));
@@ -32,16 +31,19 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
-    public List<Genre> getAll() throws SQLException {
-        String sql = "SELECT * FROM GENRES ORDER BY GENRE_ID";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
+    public List<Genre> getAll() {
+        List<Genre> allGenres = new ArrayList<>();
+        String sqlGetAllGenres = "SELECT * FROM GENRES ORDER BY GENRE_ID";
+        SqlRowSet genreRowSet = jdbcTemplate.queryForRowSet(sqlGetAllGenres);
+        while (genreRowSet.next()) {
+            allGenres.add(makeGenre(genreRowSet));
+        }
+        return allGenres;
     }
 
-    @Override
-    public Genre makeGenre(ResultSet rs) throws SQLException {
+    private Genre makeGenre(SqlRowSet rs) {
         Long id = rs.getLong("GENRE_ID");
         String name = rs.getString("NAME");
         return new Genre(id, name);
     }
-
 }

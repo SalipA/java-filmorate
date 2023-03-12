@@ -31,7 +31,7 @@ class FilmorateApplicationTests {
 
 	@Test
 	@Order(2)
-	public void shouldAddUserToStorageStandardCase() throws Exception {
+	public void shouldAddUserToStorageStandardCase() {
 		User STANDARD_CASE_USER = new User();
 		STANDARD_CASE_USER.setEmail("test@test.ru");
 		STANDARD_CASE_USER.setLogin("testLogin");
@@ -48,7 +48,7 @@ class FilmorateApplicationTests {
 
 	@Test
 	@Order(3)
-	public void shouldGetUserFromStorageStandardCase() throws Exception {
+	public void shouldGetUserFromStorageStandardCase() {
 		User user = userStorage.getUserFromStorage(1L);
 		Assertions.assertEquals(1L, user.getId());
 		Assertions.assertEquals("test@test.ru", user.getEmail());
@@ -59,7 +59,7 @@ class FilmorateApplicationTests {
 
 	@Test
 	@Order(4)
-	public void shouldUpdateUsersInStorageStandardCase() throws Exception {
+	public void shouldUpdateUsersInStorageStandardCase() {
 		User update = new User();
 		update.setId(1L);
 		update.setEmail("update@test.ru");
@@ -74,7 +74,7 @@ class FilmorateApplicationTests {
 
 	@Test
 	@Order(5)
-	public void shouldGetAllUsersFromStorageStandardCase() throws Exception {
+	public void shouldGetAllUsersFromStorageStandardCase() {
 		List<User> allUsers = userStorage.getAll();
 		Assertions.assertEquals(1, allUsers.size());
 		Assertions.assertEquals(userStorage.getUserFromStorage(1L), allUsers.get(0));
@@ -83,7 +83,7 @@ class FilmorateApplicationTests {
 
 	@Test
 	@Order(6)
-	public void shouldAddFilmToStorageStandardCase() throws Exception {
+	public void shouldAddFilmToStorageStandardCase() {
 		Film STANDARD_CASE_FILM = new Film();
 		STANDARD_CASE_FILM.setName("testFilm");
 		STANDARD_CASE_FILM.setDescription("testDescription");
@@ -102,7 +102,7 @@ class FilmorateApplicationTests {
 
 	@Test
 	@Order(7)
-	public void shouldGetFilmFromStorageStandardCase() throws Exception {
+	public void shouldGetFilmFromStorageStandardCase() {
 		Film film = filmStorage.getFilmFromStorage(1L);
 		Assertions.assertEquals(1, film.getId());
 		Assertions.assertEquals("testFilm", film.getName());
@@ -114,7 +114,7 @@ class FilmorateApplicationTests {
 
 	@Test
 	@Order(8)
-	public void shouldUpdateFilmFromStorageStandardCase() throws Exception {
+	public void shouldUpdateFilmFromStorageStandardCase() {
 		Film update = new Film();
 		update.setId(1L);
 		update.setName("updateFilm");
@@ -129,7 +129,7 @@ class FilmorateApplicationTests {
 
 	@Test
 	@Order(9)
-	public void shouldGetAllFilmsFromStorageStandardCase() throws Exception {
+	public void shouldGetAllFilmsFromStorageStandardCase() {
 		List<Film> allUsers = filmStorage.getAll();
 		Assertions.assertEquals(1, allUsers.size());
 		Assertions.assertEquals(filmStorage.getFilmFromStorage(1L), allUsers.get(0));
