@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.service.film;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.AlreadyExistException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -22,16 +22,16 @@ public class FilmService {
     Comparator<Film> compPopular = Comparator.comparingInt(o -> POPULAR_FROM_MAX_TO_MIN_SORT_RATE * o.getLikes().size());
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(@Qualifier("DbStorage") FilmStorage filmStorage) {
         this.filmStorage = filmStorage;
     }
 
-    public Film createFilm(Film film) throws ValidationException, AlreadyExistException {
+    public Film createFilm(Film film) {
         validateInput(film);
         return filmStorage.addFilmToStorage(film);
     }
 
-    public Film updateFilm(Film film) throws ValidationException, NotFoundException {
+    public Film updateFilm(Film film) {
         validateInput(film);
         return filmStorage.updateFilmInStorage(film);
     }
@@ -40,18 +40,18 @@ public class FilmService {
         return filmStorage.getAll();
     }
 
-    public Film getFilmById(Long filmId) throws NotFoundException {
+    public Film getFilmById(Long filmId) {
         return filmStorage.getFilmFromStorage(filmId);
     }
 
-    public Film addLike(Long filmId, Long userId) throws NotFoundException {
+    public Film addLike(Long filmId, Long userId) {
         Film foundFilm = filmStorage.getFilmFromStorage(filmId);
         foundFilm.setLikes(userId);
         filmStorage.updateFilmInStorage(foundFilm);
         return foundFilm;
     }
 
-    public Film removeLike(Long filmId, Long userId) throws NotFoundException {
+    public Film removeLike(Long filmId, Long userId) {
         Film foundFilm = filmStorage.getFilmFromStorage(filmId);
         if (foundFilm.getLikes().contains(userId)) {
             foundFilm.getLikes().remove(userId);
@@ -75,7 +75,7 @@ public class FilmService {
         }
     }
 
-    private void validateInput(Film film) throws ValidationException {
+    private void validateInput(Film film) {
         if (film.getName() == null || film.getName().isBlank()) {
             throw new ValidationException("Название не может быть пустым");
         } else if (film.getDescription() != null && film.getDescription().length() > MAX_LENGTH_DESCRIPTION) {

@@ -43,7 +43,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldAddFilmInStorageStandardCase() throws Exception {
+    public void shouldAddFilmInStorageStandardCase() {
         Film testFilm = FS.createFilm(STANDARD_CASE_FILM);
         Assertions.assertEquals(1L, testFilm.getId());
         Assertions.assertEquals(FS.getFilmById(1L), testFilm);
@@ -51,7 +51,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldAddFilmInStorageIfFilmAlreadyExist() throws Exception {
+    public void shouldAddFilmInStorageIfFilmAlreadyExist() {
         FS.createFilm(STANDARD_CASE_FILM);
         final AlreadyExistException exp = Assertions.assertThrows(AlreadyExistException.class,
             () -> FS.createFilm(STANDARD_CASE_FILM)
@@ -60,7 +60,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldUpdateFilmInStorageStandardCase() throws Exception {
+    public void shouldUpdateFilmInStorageStandardCase() {
         Film testFilm = FS.createFilm(STANDARD_CASE_FILM);
         testFilm.setDescription("Update Desc");
         FS.updateFilm(testFilm);
@@ -78,7 +78,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldUpdateFilmInStorageIfFilmNotFound() throws Exception {
+    public void shouldUpdateFilmInStorageIfFilmNotFound() {
         Film testFilm = FS.createFilm(STANDARD_CASE_FILM);
         testFilm.setDescription("Update Desc");
         testFilm.setId(3L);
@@ -89,7 +89,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldGetAllFilmsFromStorageStandardCase() throws Exception {
+    public void shouldGetAllFilmsFromStorageStandardCase() {
         Film testFilm1 = FS.createFilm(STANDARD_CASE_FILM);
         Film testFilm2 = FS.createFilm(STANDARD_CASE_FILM_2);
         List<Film> testList = List.of(testFilm1, testFilm2);
@@ -98,7 +98,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldGetFilmByIdStandardCase() throws Exception {
+    public void shouldGetFilmByIdStandardCase() {
         FS.createFilm(STANDARD_CASE_FILM);
         STANDARD_CASE_FILM.setId(1L);
         Assertions.assertEquals(STANDARD_CASE_FILM, FS.getFilmById(1L));
@@ -113,7 +113,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldAddLikeToFilmStandardCase() throws Exception {
+    public void shouldAddLikeToFilmStandardCase() {
         FS.createFilm(STANDARD_CASE_FILM);
         FS.addLike(1L, 101L);
         STANDARD_CASE_FILM.setLikes(101L);
@@ -123,7 +123,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldAddLikeToFilmMoreThanOneTime() throws Exception {
+    public void shouldAddLikeToFilmMoreThanOneTime() {
         FS.createFilm(STANDARD_CASE_FILM);
         FS.addLike(1L, 101L);
         FS.addLike(1L, 101L);
@@ -141,7 +141,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldRemoveLikeFromFilmStandardCase() throws Exception {
+    public void shouldRemoveLikeFromFilmStandardCase() {
         FS.createFilm(STANDARD_CASE_FILM);
         FS.addLike(1L, 101L);
         FS.addLike(1L, 102L);
@@ -160,7 +160,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldRemoveLikeFromFilmIfUserIdNotFound() throws Exception {
+    public void shouldRemoveLikeFromFilmIfUserIdNotFound() {
         FS.createFilm(STANDARD_CASE_FILM);
         FS.addLike(1L, 101L);
         final NotFoundException exp = Assertions.assertThrows(NotFoundException.class,
@@ -170,7 +170,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldGetPopularFilmsStandardCase() throws Exception {
+    public void shouldGetPopularFilmsStandardCase() {
         FS.createFilm(STANDARD_CASE_FILM);
         FS.createFilm(STANDARD_CASE_FILM_2);
         FS.addLike(1L, 101L);
@@ -179,7 +179,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldGetPopularFilmsIfCount10() throws Exception {
+    public void shouldGetPopularFilmsIfCount10() {
         List<Film> tenFilms = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             tenFilms.add(new Film());
@@ -214,7 +214,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldGetPopularFilmsIfCount11() throws Exception {
+    public void shouldGetPopularFilmsIfCount11() {
         List<Film> tenFilms = new ArrayList<>();
         for (int i = 0; i < 11; i++) {
             tenFilms.add(new Film());
@@ -250,7 +250,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldGetPopularFilmsIfNotLikes() throws Exception {
+    public void shouldGetPopularFilmsIfNotLikes() {
         FS.createFilm(STANDARD_CASE_FILM);
         FS.createFilm(STANDARD_CASE_FILM_2);
 
@@ -258,7 +258,7 @@ public class FilmServiceTest {
     }
 
     @Test
-    public void shouldGetPopularIfRemoveLike() throws Exception {
+    public void shouldGetPopularIfRemoveLike() {
         FS.createFilm(STANDARD_CASE_FILM);
         FS.createFilm(STANDARD_CASE_FILM_2);
         FS.addLike(1L, 1L);
